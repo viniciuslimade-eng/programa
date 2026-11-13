@@ -1,0 +1,9 @@
+
+; <<>> DiG 9.18.39 <<>> +time=3 +tries=1 +noall +comments +answer www.example.test A
+;; Got answer:
+;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 4242
+;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1
+
+;; ANSWER SECTION:
+www.example.test.	300	IN	CNAME	lb.example.test.
+lb.example.test.	60	IN	A	192.0.2.2

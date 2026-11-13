@@ -1,0 +1,17 @@
+{
+  "registros": {
+    "example.test": {"A": ["192.0.2.1"]},
+    "www.example.test": {"CNAME": ["lb.example.test"], "A": ["192.0.2.2"]},
+    "lb.example.test": {"A": ["192.0.2.2"]},
+    "sistemas.example.test": {"A": ["192.0.2.3"], "AAAA": ["2001:db8::3"]},
+    "sombra.example.test": {"A": ["192.0.2.4"]},
+    "fornecedor.example.test": {"CNAME": ["app.fornecedor.example"]},
+    "semdados.example.test": {"TXT": ["v=spf1 -all"]}
+  },
+  "wildcards": {
+    "*.dev.example.test": {"A": ["192.0.2.99"]}
+  },
+  "falhas": {
+    "quebrado.example.test": "SERVFAIL"
+  }
+}

@@ -1,0 +1,4 @@
+url,sondar,rastrear,responsavel,revisado_por,data_revisao,terceiro_confirmado,observacao
+https://www.example.org/,sim,sim,TI - Portal,Segurança - analista,2026-11-20,na,piloto
+http://www.example.org/,sim,nao,TI - Portal,Segurança - analista,2026-11-20,na,verificar redirecionamento para HTTPS
+https://sistemas.example.org/,sim,nao,TI - Sistemas,Segurança - analista,2026-11-20,na,

@@ -1,0 +1,18 @@
+#!/usr/bin/env python3
+"""Subfinder falso: copia a fixture indicada em FALSA_SUBFINDER_FIXTURE para -o."""
+import os
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _comum import args, tratar_meta  # noqa: E402
+
+tratar_meta("subfinder", "2.17.0", sys.argv[1:])
+a = args(sys.argv[1:], {"-silent", "-duc", "-oJ", "-cs", "-nc", "-all"})
+fixture = os.environ.get("FALSA_SUBFINDER_FIXTURE")
+saida = a.get("-o", [""])[0]
+conteudo = Path(fixture).read_text(encoding="utf-8") if fixture else ""
+if saida:
+    Path(saida).write_text(conteudo, encoding="utf-8")
+else:
+    sys.stdout.write(conteudo)

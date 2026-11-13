@@ -1,0 +1,7 @@
+host,fonte,responsavel,portas,terceiro,observacao
+WWW.Example.Test.,f5,GTI Portal,443,nao,maiúsculas e ponto final
+sistemas.example.test,f5,GTI Sistemas,"443;8443",nao,
+portal.dev.example.test,firewall,GTI Dev,443,nao,coberto por wildcard mas respaldado internamente
+antigo.example.test,zona_dns,GTI Infra,,nao,registro interno sem DNS público
+fornecedor.example.test,gateway,Fornecedor X,443,sim,operado por terceiro
+parceiro.example.net,gateway,Parceiro X,,nao,dependência externa

@@ -1,0 +1,12 @@
+{"host":"www.example.test","input":"example.test","sources":["crtsh","alienvault"]}
+{"host":"sistemas.example.test","input":"example.test","sources":["crtsh"]}
+{"host":"qualquer.dev.example.test","input":"example.test","sources":["hackertarget"]}
+{"host":"sombra.example.test","input":"example.test","sources":["anubis"]}
+{"host":"quebrado.example.test","input":"example.test","sources":["crtsh"]}
+{"host":"semdados.example.test","input":"example.test","sources":["crtsh"]}
+{"host":"*.example.test","input":"example.test","sources":["crtsh"]}
+{"host":"example.test.evil.test","input":"example.test","sources":["crtsh"]}
+{"host":"xexample.test","input":"example.test","sources":["crtsh"]}
+{"host":"example-test.example","input":"example.test","sources":["crtsh"]}
+{"host":"192.0.2.10","input":"example.test","sources":["crtsh"]}
+{"host":"in_valido!.example.test","input":"example.test","sources":["crtsh"]}

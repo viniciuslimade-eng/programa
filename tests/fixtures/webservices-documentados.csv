@@ -1,0 +1,3 @@
+host,rota,protocolo,ambiente,versao,documentacao,finalidade,dados_tratados,consumidores,responsavel,fonte
+localhost,/ws/legado.asmx,SOAP,produção,,WSDL citado no plano de TI,consulta de carteiras,dados cadastrais,parceiros,GTI Sistemas,plano de TI histórico
+localhost,/api/v1/usuarios,REST,produção,v1,,cadastro,dados pessoais,portal,GTI Sistemas,manual

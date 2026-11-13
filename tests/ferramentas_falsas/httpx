@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+"""httpx falso: faz GET real (sem seguir redirecionamentos) e emite JSONL no formato do httpx."""
+import datetime as dt
+import http.client
+import json
+import re
+import ssl
+import sys
+import time
+from pathlib import Path
+from urllib.parse import urlsplit
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _comum import args, tratar_meta  # noqa: E402
+
+tratar_meta("httpx", "1.12.0", sys.argv[1:])
+BOOL = {"-nfs", "-silent", "-sc", "-title", "-td", "-server", "-ip", "-cname", "-location", "-ct", "-j", "-cl",
+        "-probe", "-tls-grab", "-ob", "-duc", "-nc", "-fr"}
+a = args(sys.argv[1:], BOOL)
+if "-fr" in a:
+    sys.exit("teste: -fr não deveria ser usado")
+alvos = [l.strip() for l in Path(a["-l"][0]).read_text().splitlines() if l.strip()]
+timeout = float(a.get("-timeout", ["10"])[0])
+rl = float(a.get("-rl", ["150"])[0])
+rstr = int(a.get("-rstr", ["50000000"])[0])
+intervalo = 1.0 / rl if rl > 0 else 0
+for alvo in alvos:
+    inicio = time.monotonic()
+    p = urlsplit(alvo)
+    porta = p.port or (443 if p.scheme == "https" else 80)
+    try:
+        if p.scheme == "https":
+            c = http.client.HTTPSConnection(p.hostname, porta, timeout=timeout, context=ssl._create_unverified_context())
+        else:
+            c = http.client.HTTPConnection(p.hostname, porta, timeout=timeout)
+        c.request("GET", (p.path or "/") + (("?" + p.query) if p.query else ""), headers={"User-Agent": "falso"})
+        r = c.getresponse()
+        corpo = r.read(rstr).decode("utf-8", "replace")
+        m = re.search(r"<title>(.*?)</title>", corpo, re.S | re.I)
+        obj = {"timestamp": dt.datetime.now().isoformat(), "url": alvo, "input": alvo, "scheme": p.scheme,
+               "port": str(porta), "path": p.path or "/", "host": "127.0.0.1", "method": "GET",
+               "title": m.group(1).strip() if m else "", "webserver": r.getheader("Server", ""),
+               "content_type": (r.getheader("Content-Type", "") or "").split(";")[0],
+               "content_length": int(r.getheader("Content-Length", "0") or 0), "status_code": r.status,
+               "a": ["127.0.0.1"], "tech": ["Python"] if "-td" in a else [], "failed": False,
+               "body": corpo}
+        if r.getheader("Location") and "-location" in a:
+            obj["location"] = r.getheader("Location")
+        print(json.dumps(obj), flush=True)
+    except Exception as exc:  # noqa: BLE001
+        if "-probe" in a:
+            print(json.dumps({"timestamp": dt.datetime.now().isoformat(), "url": alvo, "input": alvo,
+                              "failed": True, "error": f"{type(exc).__name__}: {exc}"}), flush=True)
+    resto = intervalo - (time.monotonic() - inicio)
+    if resto > 0:
+        time.sleep(resto)

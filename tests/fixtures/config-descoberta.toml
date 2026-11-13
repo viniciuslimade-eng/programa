@@ -1,0 +1,17 @@
+[escopo]
+dominios_exatos = ["example.test", "www.example.test"]
+sufixos = ["example.test"]
+esquemas = ["http", "https"]
+portas = [80, 443, 8443]
+terceiros = ["fornecedor.example.test"]
+
+[ferramentas]
+subfinder = "subfinder"
+
+[descoberta]
+dominios_raiz = ["example.test"]
+
+[dns]
+taxa_por_segundo = 0
+amostras_wildcard = 3
+ramos_wildcard_max = 10

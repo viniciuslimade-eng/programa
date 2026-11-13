@@ -1,0 +1,2 @@
+host,rota,protocolo,ambiente,versao,documentacao,finalidade,dados_tratados,consumidores,responsavel,fonte
+sistemas.example.org,/ws/exemplo.asmx,SOAP,produção,,WSDL citado no plano de TI,a confirmar,a confirmar,parceiros,TI - Sistemas,plano de TI histórico

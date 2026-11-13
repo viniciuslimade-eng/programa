@@ -1,0 +1,9 @@
+__pycache__/
+*.egg-info/
+build/
+# Rodadas contêm dados brutos restritos à equipe de segurança: não versionar.
+*-inventario-*/
+inventario-*/
+/config.toml
+/origens-revisadas.csv
+/hosts-internos.csv

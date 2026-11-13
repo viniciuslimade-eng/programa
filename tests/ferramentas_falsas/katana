@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+"""Katana falso: crawl BFS respeitando -cs, -cos, -d, -mrs, -kf e -jc; emite JSONL com corpo (para testar o filtro)."""
+import datetime as dt
+import http.client
+import json
+import re
+import sys
+import time
+from pathlib import Path
+from urllib.parse import urljoin, urlsplit
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _comum import args, tratar_meta  # noqa: E402
+
+tratar_meta("katana", "1.8.0", sys.argv[1:])
+BOOL = {"-dr", "-j", "-silent", "-or", "-ob", "-duc", "-nc", "-jc", "-aff", "-ns", "-ndef"}
+a = args(sys.argv[1:], BOOL)
+for proibida in ("-aff", "-ns"):
+    if proibida in a:
+        sys.exit("teste: flag proibida")
+inicio = a["-u"][0]
+cs = [re.compile(x) for x in a.get("-cs", [])]
+cos = [re.compile(x) for x in a.get("-cos", [])]
+prof = int(a.get("-d", ["3"])[0])
+mrs = int(a.get("-mrs", ["4194304"])[0])
+timeout = float(a.get("-timeout", ["10"])[0])
+rl = float(a.get("-rl", ["150"])[0])
+kf = a.get("-kf", [""])[0]
+
+
+def no_escopo(u):
+    return (not cs or any(r.search(u) for r in cs)) and not any(r.search(u) for r in cos)
+
+
+fila = [(inicio, 0, "", "")]
+if kf:
+    for nome in ("robots.txt", "sitemap.xml"):
+        if nome.split(".")[0] in kf or kf == "all":
+            fila.append((urljoin(inicio, "/" + nome), 1, "known-files", "file"))
+vistos = set()
+while fila:
+    url, d, fonte, tag = fila.pop(0)
+    if url in vistos or not no_escopo(url) or d > prof:
+        continue
+    vistos.add(url)
+    p = urlsplit(url)
+    try:
+        c = http.client.HTTPConnection(p.hostname, p.port or 80, timeout=timeout)
+        c.request("GET", (p.path or "/") + (("?" + p.query) if p.query else ""))
+        r = c.getresponse()
+        corpo = r.read(mrs).decode("utf-8", "replace")
+        headers = {k.lower().replace("-", "_"): v for k, v in r.getheaders()}
+        obj = {"timestamp": dt.datetime.now().isoformat(),
+               "request": {"method": "GET", "endpoint": url, "tag": tag, "attribute": "href" if tag == "a" else tag,
+                           "source": fonte, "raw": "GET ..."},
+               "response": {"status_code": r.status, "headers": headers, "body": corpo,
+                            "content_length": len(corpo), "raw": "HTTP/1.1 ..."}}
+    except Exception as exc:  # noqa: BLE001
+        obj = {"timestamp": dt.datetime.now().isoformat(), "request": {"method": "GET", "endpoint": url, "source": fonte},
+               "error": str(exc)}
+        corpo = ""
+    print(json.dumps(obj), flush=True)
+    time.sleep(1.0 / rl if rl > 0 else 0)
+    for m in re.finditer(r'(?:href|src)=["\']([^"\']+)["\']', corpo):
+        fila.append((urljoin(url, m.group(1)).split("#")[0], d + 1, url, "a"))
+    if "-jc" in a and url.endswith(".js"):
+        for m in re.finditer(r'["\'](/[A-Za-z0-9_/.-]*api[A-Za-z0-9_/.-]*)["\']', corpo):
+            fila.append((urljoin(url, m.group(1)), d + 1, url, "js"))
+    for m in re.finditer(r"<loc>([^<]+)</loc>", corpo):
+        fila.append((m.group(1), d + 1, url, "sitemap"))

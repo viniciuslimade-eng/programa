@@ -1,0 +1,5 @@
+host,fonte,responsavel,portas,terceiro,observacao
+www.example.org,f5,TI - Portal,443,nao,virtual server portal
+sistemas.example.org,f5,TI - Sistemas,443,nao,sistema corporativo
+fornecedor.example.org,firewall,Fornecedor X,443,sim,operado por terceiro
+parceiro.example.net,gateway,Parceiro X,,nao,dependência externa

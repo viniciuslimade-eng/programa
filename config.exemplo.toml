@@ -1,0 +1,73 @@
+# Configuração de exemplo da esteira. Copie para config.toml e ajuste.
+# A cópia usada na rodada fica em <rodada>/entradas/config.toml (com hash no manifesto).
+
+[rodada]
+prefixo = "inventario"
+
+[escopo]
+# Domínio exato: casa somente o próprio nome.
+dominios_exatos = ["example.org", "www.example.org"]
+# Sufixo com ponto: "example.org" casa "x.example.org", mas NÃO "xexample.org" nem "example.org.evil.com".
+sufixos = ["example.org"]
+esquemas = ["http", "https"]
+portas = [80, 443, 8443]
+hosts_excluidos = []
+# Hosts operados por terceiros: só são sondados com terceiro_confirmado=sim na revisão.
+terceiros = []
+
+[identificacao]
+# Facilita a correlação no F5/WAF. Não inclua dados pessoais.
+user_agent = "Inventario-Superficie/0.1"
+
+[ferramentas]
+subfinder = "subfinder"
+httpx = "httpx"
+katana = "katana"
+dig = "dig"
+
+[descoberta]
+dominios_raiz = ["example.org"]
+subfinder_timeout_s = 30
+subfinder_max_minutos = 10
+
+[dns]
+resolvedores = []          # vazio = resolvedor do sistema; ex.: ["1.1.1.1", "8.8.8.8"]
+taxa_por_segundo = 5
+timeout_s = 3
+amostras_wildcard = 3
+ramos_wildcard_max = 20
+
+[sondagem]
+taxa_por_segundo = 1
+concorrencia = 1
+timeout_s = 8
+max_requisicoes = 50
+duracao_max_s = 900
+max_bytes_resposta = 1048576
+max_saltos_redirecionamento = 3
+# false: redirecionamentos são validados e registrados, nunca seguidos.
+# true: segue apenas para origens já aprovadas para sondagem, salto a salto.
+seguir_redirecionamentos_revisados = false
+
+[rastreamento]
+profundidade = 3
+duracao_max_s = 300            # por origem (-ct)
+duracao_total_max_s = 3600
+max_bytes_resposta = 1048576   # -mrs
+timeout_s = 8
+concorrencia = 1
+paralelismo = 1
+taxa_por_segundo = 1
+max_requisicoes = 500          # total da etapa (linhas de saída)
+max_requisicoes_por_origem = 300
+max_paginas_por_dominio = 300  # -mdp, se suportado
+exclusoes = '(?i)(logout|signout|sair|excluir|delete|remover|desativar|cancelar)'
+# -kf aceita UM valor no Katana v1.8.0: "all", "robotstxt" ou "sitemapxml" ("" desativa).
+# No laboratório, -kf all reduziu a cobertura de links HTML; compare com e sem no piloto.
+arquivos_conhecidos = ""
+js_crawl = true
+incluir_estaticos = true       # -ndef: lista PDFs/anexos e estáticos na saída
+
+[relatorio]
+csv_bom = true                 # UTF-8 com BOM (abre corretamente no Excel)
+parametros_preservados = []    # nomes de parâmetros cujo valor pode aparecer nos relatórios (ex.: ["pagina"])
